@@ -36,6 +36,6 @@ define :fpm_pool, :template => "fpm_pool.conf.erb" do
       :group => params[:group],
       :socket_dir => "/var/run/php5"
     )
-    notifies :restart, resources(:service => "php5-fpm"), :delayed
+    notifies :reload, resources(:service => "php5-fpm"), :delayed
   end
 end

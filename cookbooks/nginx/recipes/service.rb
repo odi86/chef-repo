@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: php-fpm
-# Recipe:: manager
+# Cookbook Name:: nginx
+# Recipe:: service
 #
 # Copyright 2012, Christian Häusler.
 #
@@ -17,29 +17,32 @@
 # limitations under the License.
 #
 
-include_recipe "dotdeb::php53"
+include_recipe "dotdeb"
 
-%w{php5-fpm php5-cgi}.each do |package|
-  package "#{package}" do
-    action :upgrade
+package "nginx" do
+  # Workaround for packages authentication failiure
+  options "--force-yes"
+end
+
+%w{nxensite nxdissite}.each do |nxscript|
+  template "/usr/sbin/#{nxscript}" do
+    source "#{nxscript}.erb"
+    mode 0755
+    owner "root"
+    group "root"
   end
 end
 
-# This directory will contain the pid and socket files
-directory "/var/run/php5/" do
-  owner "root"
-  mode "0755"
-  action :create
-end
-
-cookbook_file "/etc/php5/fpm/php-fpm.conf" do
-  source "php5-fpm.conf"
-  mode 0644
+template "nginx.conf" do
+  path "#{node[:nginx][:dir]}/nginx.conf"
+  source "nginx.conf.erb"
   owner "root"
   group "root"
+  mode 0644
+  notifies :reload, "service[nginx]"
 end
 
-service "php5-fpm" do
+service "nginx" do
   supports :status => true, :restart => true, :reload => true
-  action [ :enable, :restart ]
+  action [ :enable, :start ]
 end

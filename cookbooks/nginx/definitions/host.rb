@@ -1,6 +1,6 @@
 #
-# Cookbook Name:: php-fpm
-# Recipe:: manager
+# Cookbook Name:: nginx
+# Definition:: host
 #
 # Copyright 2012, Christian Häusler.
 #
@@ -16,30 +16,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-include_recipe "dotdeb::php53"
-
-%w{php5-fpm php5-cgi}.each do |package|
-  package "#{package}" do
-    action :upgrade
+ 
+define :host, :template => "default-site.erb", :port => 80, :server_aliases => [], :indexes => %w{index.html index.htm} do
+   
+  name = params[:name]
+  config_dir = "#{node[:nginx][:dir]}/sites-available"
+  
+  template "#{config_dir}/#{name}" do
+    source params[:template]
+    owner "root"
+    group "root"
+    mode 0644
+    variables(
+      :params => params
+    )
+    notifies :reload, resources(:service => "nginx"), :delayed
   end
-end
-
-# This directory will contain the pid and socket files
-directory "/var/run/php5/" do
-  owner "root"
-  mode "0755"
-  action :create
-end
-
-cookbook_file "/etc/php5/fpm/php-fpm.conf" do
-  source "php5-fpm.conf"
-  mode 0644
-  owner "root"
-  group "root"
-end
-
-service "php5-fpm" do
-  supports :status => true, :restart => true, :reload => true
-  action [ :enable, :restart ]
+  
+  nginx_site name
 end

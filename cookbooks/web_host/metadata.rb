@@ -1,0 +1,5 @@
+maintainer       "Christian Häusler"
+maintainer_email "haeusler.christian@mac.com"
+license          "Apachev"
+description      "Deploy web applications"
+version          "0.0.1"

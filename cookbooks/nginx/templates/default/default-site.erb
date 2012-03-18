@@ -1,0 +1,34 @@
+server {
+	listen <%= @params[:port] %>;
+	
+	server_name <%= @params[:server_name] || @params[:name] %><% @params[:server_aliases].each do |a| %> <%= "#{a}" %><% end %>;
+
+	root <%= @params[:root_dir] %>;
+	index <% @params[:indexes].each do |i| %> <%= "#{i}" %><% end %>;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to index
+		try_files $uri $uri/ /<%= @params[:indexes].first %>;
+	}
+
+	# location /doc/ {
+	# 	alias /usr/share/doc/;
+	# 	autoindex on;
+	# 	allow 127.0.0.1;
+	# 	deny all;
+	# }
+
+	# location ~ \.php$ {
+	# 	fastcgi_pass unix:/var/run/www.socket;
+	# 	fastcgi_index index.php;
+	# 	include fastcgi_params;
+	# }
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#
+	# location ~ /\.ht {
+	# 	deny all;
+	# }
+}

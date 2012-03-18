@@ -1,0 +1,20 @@
+server {
+	listen <%= @params[:port] %>;
+	
+	server_name <%= @params[:server_name] || @params[:name] %><% @params[:server_aliases].each do |a| %> <%= "#{a}" %><% end %>;
+
+	root <%= @params[:root_dir] %>;
+	index <% @params[:indexes].each do |i| %> <%= "#{i}" %><% end %>;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to index
+		try_files $uri /<%= @params[:indexes].first %>;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5/<%= @params[:name] %>.socket;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+}
