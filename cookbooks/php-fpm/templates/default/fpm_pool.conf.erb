@@ -1,0 +1,11 @@
+[<%= @pool_name %>]
+
+user = <%= @user %>
+group = <%= @group %>
+
+listen = <%= @socket_dir %>/<%= @pool_name %>.socket
+
+pm = dynamic
+pm.max_children = 5
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3

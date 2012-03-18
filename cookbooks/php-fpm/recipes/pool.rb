@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: php-fpm
-# Recipe:: default
+# Recipe:: pool
 #
 # Copyright 2012, Christian Häusler.
 #
@@ -17,5 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe "php-fpm::manager"
-include_recipe "php-fpm::pool"
+fpm_pool "www" do
+  user  "www-data"
+  group "www-data"
+end
